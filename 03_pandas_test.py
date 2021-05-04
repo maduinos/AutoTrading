@@ -32,3 +32,5 @@ print("close down sum = {}".format(close_down_sum) )
 
 rsi = close_up_sum / (close_up_sum + abs(close_down_sum) )
 print("%s RSI = %0.5f"% (coin_type, rsi) )
+
+print(df.describe())
