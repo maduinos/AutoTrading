@@ -1,6 +1,7 @@
 import pyupbit
 import pandas as pd
 import numpy as np
+import time
 
 tickers = pyupbit.get_tickers(fiat="KRW")
 #print(tickers)
@@ -34,3 +35,7 @@ rsi = close_up_sum / (close_up_sum + abs(close_down_sum) )
 print("%s RSI = %0.5f"% (coin_type, rsi) )
 
 print(df.describe())
+
+now = time.localtime()
+print("%04d%02d%02d%02d%02d%02d"%(now.tm_year,now.tm_mon,now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec) )
+print( str(now.tm_year)+str(now.tm_mon).zfill(2)+str(now.tm_mday).zfill(2)+str(now.tm_hour).zfill(2)+str(now.tm_min).zfill(2)+str(now.tm_sec).zfill(2) )

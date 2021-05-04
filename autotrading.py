@@ -9,6 +9,7 @@
 import pyupbit
 import pandas as pd
 import numpy as np
+import time
 
 tickers = pyupbit.get_tickers(fiat="KRW")
 current_price = pyupbit.get_current_price(tickers)
@@ -38,8 +39,11 @@ def rsi_load(coin_type, date, count, interval, std):
 
 
 if __name__ == "__main__":
+    now = time.localtime()
+    current_time = ( str(now.tm_year)+str(now.tm_mon).zfill(2)+str(now.tm_mday).zfill(2)+str(now.tm_hour).zfill(2)+str(now.tm_min).zfill(2)+str(now.tm_sec).zfill(2) )
     coin_type = 'KRW-XRP'
-    date = '20210503070000' # 년월일시분일초
+    #date = '20210503070000' # 년월일시분일초
+    date = current_time 
     count = 200 
     interval = 'minute1'
     std = 'close'
