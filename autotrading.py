@@ -12,9 +12,11 @@ import numpy as np
 import time
 import os
 
-tickers = pyupbit.get_tickers(fiat="KRW")
-current_price = pyupbit.get_current_price(tickers)
-current_price = pd.Series(current_price)
+def tickers_load(std):
+    tickers = pyupbit.get_tickers(fiat=std)
+    #current_price = pyupbit.get_current_price(tickers)
+    #current_price = pd.Series(current_price)
+    return tickers
 
 def rsi_load(coin_type, date, count, interval, std):
     df = pyupbit.get_ohlcv(coin_type, to=date, count=count, interval=interval)
@@ -36,7 +38,7 @@ def rsi_load(coin_type, date, count, interval, std):
     rsi = up_sum / (up_sum + down_sum)
     return rsi
 
-def rsi_dataframe(coin_type, date, count, interval, std):
+def rsi_dataframe(tickers, date, count, interval, std):
     rsi_list = []
     progressbar = ''
     for coin in tickers:
@@ -57,7 +59,6 @@ def rsi_dataframe(coin_type, date, count, interval, std):
 if __name__ == "__main__":
     now = time.localtime()
     current_time = ( str(now.tm_year)+str(now.tm_mon).zfill(2)+str(now.tm_mday).zfill(2)+str(now.tm_hour).zfill(2)+str(now.tm_min).zfill(2)+str(now.tm_sec).zfill(2) )
-    coin_type = 'KRW-GRS'
     #date = '20210503070000' # 년월일시분일초
     date = current_time 
     count = 14 
@@ -65,6 +66,7 @@ if __name__ == "__main__":
     interval = "day"
     std = 'close'
 
-    df = rsi_dataframe(coin_type, date, count, interval, std)
+    tickers = tickers_load('KRW')
+    df = rsi_dataframe(tickers, date, count, interval, std)
     print(df)
 
