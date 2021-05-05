@@ -23,8 +23,9 @@ def rsi_load(coin_type, date, count, interval, std):
     df = pd.DataFrame(df)
     #print(df[std].iloc[0])
 
-    df['up'] = df[std] - df[std].iloc[0]
-    df['down'] = df[std] - df[std].iloc[0]
+    df['pre_close'] = df[std].shift(1)
+    df['up'] = df[std] - df['pre_close']
+    df['down'] = df[std] - df['pre_close']
 
     df.loc[df.up<0,'up']=0
     df.loc[df.down>0,'down']=0
@@ -45,7 +46,7 @@ def rsi_dataframe(tickers, date, count, interval, std):
         rsi = rsi_load(coin, date, count, interval, std)
         rsi_list.append([coin, rsi])
         #print("%s RSI = %0.5f"% (coin, rsi) )
-        time.sleep(0.1)
+        time.sleep(0.05)
         progressbar += ('#')
         os.system('clear')
         print(progressbar,end='\r')
@@ -56,17 +57,21 @@ def rsi_dataframe(tickers, date, count, interval, std):
         
     return df 
 
-if __name__ == "__main__":
+def time_now():
     now = time.localtime()
     current_time = ( str(now.tm_year)+str(now.tm_mon).zfill(2)+str(now.tm_mday).zfill(2)+str(now.tm_hour).zfill(2)+str(now.tm_min).zfill(2)+str(now.tm_sec).zfill(2) )
+    return current_time
+
+if __name__ == "__main__":
     #date = '20210503070000' # 년월일시분일초
-    date = current_time 
-    count = 14 
-    #interval = "minute60"
-    interval = "day"
+    date = time_now()
+    count = 15 
+    interval = "day" # minute1~minute60
     std = 'close'
 
     tickers = tickers_load('KRW')
     df = rsi_dataframe(tickers, date, count, interval, std)
     print(df)
 
+    is_cointype = df['COIN_TYPE'] == 'KRW-XRP'
+    print(df[is_cointype])
