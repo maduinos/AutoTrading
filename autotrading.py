@@ -11,9 +11,15 @@ import pandas as pd
 import numpy as np
 import time
 import os
+import sys
 
-def tickers_load(std):
-    tickers = pyupbit.get_tickers(fiat=std)
+def time_now():
+    now = time.localtime()
+    current_time = ( str(now.tm_year)+str(now.tm_mon).zfill(2)+str(now.tm_mday).zfill(2)+str(now.tm_hour).zfill(2)+str(now.tm_min).zfill(2)+str(now.tm_sec).zfill(2) )
+    return current_time
+
+def tickers_load_all(std):
+    tickers = pyupbit.get_tickers(fiat=std) # KRW/BTC/USDT
     #current_price = pyupbit.get_current_price(tickers)
     #current_price = pd.Series(current_price)
     return tickers
@@ -39,13 +45,13 @@ def rsi_load(coin_type, date, count, interval, std):
     rsi = up_sum / (up_sum + down_sum)
     return rsi
 
-def rsi_dataframe(tickers, date, count, interval, std):
+def rsi_read_dataframe(tickers, date, count, interval, std):
     rsi_list = []
     progressbar = ''
-    for coin in tickers:
-        rsi = rsi_load(coin, date, count, interval, std)
-        rsi_list.append([coin, rsi])
-        #print("%s RSI = %0.5f"% (coin, rsi) )
+    for coin_type in tickers:
+        rsi = rsi_load(coin_type, date, count, interval, std)
+        rsi_list.append([coin_type, rsi])
+        #print("%s RSI = %0.5f"% (coin_type, rsi) )
         time.sleep(0.05)
         progressbar += ('#')
         os.system('clear')
@@ -57,21 +63,23 @@ def rsi_dataframe(tickers, date, count, interval, std):
         
     return df 
 
-def time_now():
-    now = time.localtime()
-    current_time = ( str(now.tm_year)+str(now.tm_mon).zfill(2)+str(now.tm_mday).zfill(2)+str(now.tm_hour).zfill(2)+str(now.tm_min).zfill(2)+str(now.tm_sec).zfill(2) )
-    return current_time
+def search_dataframe(df, coin_type):
+    is_cointype = df['COIN_TYPE'] == 'KRW-XRP'
+    return df[is_cointype]
 
-if __name__ == "__main__":
+def main():
     #date = '20210503070000' # 년월일시분일초
     date = time_now()
     count = 15 
     interval = "day" # minute1~minute60
     std = 'close'
 
-    tickers = tickers_load('KRW')
-    df = rsi_dataframe(tickers, date, count, interval, std)
+    tickers = tickers_load_all('KRW')
+    df = rsi_read_dataframe(tickers, date, count, interval, std)
     print(df)
 
-    is_cointype = df['COIN_TYPE'] == 'KRW-XRP'
-    print(df[is_cointype])
+    print(search_dataframe(df, 'KRW-XRP'))
+
+if __name__ == "__main__":
+    main()
+
