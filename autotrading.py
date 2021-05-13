@@ -3,10 +3,12 @@
 * Ver    Who       Date         Changes
 * ----- --------- ---------- --------------------------------------------
 * 0.0.1  maduinos  2021/05/04   First release
+* 0.0.2  maduinos  2021/05/13   Used TA-Lib
 *
 -----------------------------------------------------------------------"""
 
 import pyupbit
+import talib
 import pandas as pd
 import numpy as np
 import time
@@ -26,24 +28,10 @@ def tickers_load_all(std):
 
 def rsi_load(coin_type, date, count, interval, std):
     df = pyupbit.get_ohlcv(coin_type, to=date, count=count, interval=interval)
-    df = pd.DataFrame(df)
-    #print(df[std].iloc[0])
+    array_from_df = df[std].values
+    rsi = talib.RSI(array_from_df)
 
-    df['pre_close'] = df[std].shift(1)
-    df['up'] = df[std] - df['pre_close']
-    df['down'] = df[std] - df['pre_close']
-
-    df.loc[df.up<0,'up']=0
-    df.loc[df.down>0,'down']=0
-    #print(df)
-
-    up_sum = df['up'].sum()
-    down_sum = abs(df['down'].sum())
-    #print("close up sum = {}".format(up_sum) )
-    #print("close down sum = {}".format(down_sum) )
-
-    rsi = up_sum / (up_sum + down_sum)
-    return rsi
+    return rsi[-1].tolist()
 
 def rsi_read_dataframe(tickers, date, count, interval, std):
     rsi_list = []
@@ -51,7 +39,6 @@ def rsi_read_dataframe(tickers, date, count, interval, std):
     for coin_type in tickers:
         rsi = rsi_load(coin_type, date, count, interval, std)
         rsi_list.append([coin_type, rsi])
-        #print("%s RSI = %0.5f"% (coin_type, rsi) )
         time.sleep(0.05)
         progressbar += ('#')
         os.system('clear')
@@ -59,7 +46,7 @@ def rsi_read_dataframe(tickers, date, count, interval, std):
 
     print('');
     df = pd.DataFrame(rsi_list)
-    df.columns = ['COIN_TYPE', 'RSI_14']
+    df.columns = ['COIN_TYPE', 'CURRENT_RSI']
         
     return df 
 
@@ -70,14 +57,13 @@ def search_dataframe(df, coin_type):
 def main():
     #date = '20210503070000' # 년월일시분일초
     date = time_now()
-    count = 15 
+    count = 100
     interval = "day" # minute1~minute60
     std = 'close'
 
     tickers = tickers_load_all('KRW')
     df = rsi_read_dataframe(tickers, date, count, interval, std)
     print(df)
-
     print(search_dataframe(df, 'KRW-XRP'))
 
 if __name__ == "__main__":
