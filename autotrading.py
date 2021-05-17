@@ -89,6 +89,27 @@ def search_dataframe(df, coin_type):
     is_cointype = df['COIN_TYPE'] == 'KRW-XRP'
     return df[is_cointype]
 
+def login():
+    access_key = "access_key"
+    secret_key = "secret_key"
+    key = pyupbit.Upbit(access_key, secret_key)
+    return key
+
+def buy_limit_stock(key, coin_type, price, quantity):
+    return key.buy_limit_order(coin_type, price, quantity)
+
+def buy_market_stock(key, coin_type, quantity):
+    return key.buy_market_order(coin_type, quantity)
+
+def sell_limit_stock(key, coin_type, price, quantity):
+    return key.sell_limit_order(coin_type, price, quantity)
+
+def sell_market_stock(key, coin_type, quantity):
+    return key.sell_market_order(coin_type, quantity)
+
+def cancle_order(key, uuid):
+    return key.cancel_order('uuid')
+
 def main():
     #date = '20210503070000' # 년월일시분일초
     date = time_now()
