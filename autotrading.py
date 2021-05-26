@@ -141,6 +141,9 @@ def cancle_order(key, uuid):
 def get_balance(key, ticker):
     return key.get_balance(ticker)['balance']
 
+def my_strategy(key, df):
+    return 0
+
 def main():
     #date = '20210503070000' # 년월일시분일초
     date = time_now()
