@@ -28,7 +28,7 @@ def tickers_load_all(std_price):
 def history_data_load(ticker, interval, cnt) :
     # 최근 200봉 데이터 획득
     df = pyupbit.get_ohlcv(ticker, interval=interval)
-    df = df.reindex(index=df.index[::-1]) # 최근 데이터가 위쪽으로 올라오도록
+    #df = df.reindex(index=df.index[::-1]) # 최근 데이터가 위쪽으로 올라오도록
     t = time.time()
 
     # REST API 요청 수 제한
@@ -40,8 +40,8 @@ def history_data_load(ticker, interval, cnt) :
             # print("Request Time Error")
             time.sleep(0.5)
             continue
-        df2 = df2.reindex(index=df2.index[::-1]) # 최근 데이터가 위쪽으로 올라오도록
-        df = pd.concat([df,df2])
+        # df2 = df2.reindex(index=df2.index[::-1]) # 최근 데이터가 위쪽으로 올라오도록
+        df = pd.concat([df2,df])
         # time.sleep(0.05)
 
     df.reset_index(inplace=True) # index 리셋
