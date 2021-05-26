@@ -35,7 +35,7 @@ def history_data_load(ticker, interval, cnt) :
     # 분당 600회, 초당 10회 (종목, 캔들, 체결, 티커, 호가별)
     # 마지막 데이터 이전데이터 200봉 획득
     for i in range(cnt):
-        df2 = pyupbit.get_ohlcv(ticker, interval=interval, to=df.index[-1])
+        df2 = pyupbit.get_ohlcv(ticker, interval=interval, to=df.index[0])
         if df2 is None: # 요청 수 제한 초과시 재시도 예외 처리
             # print("Request Time Error")
             time.sleep(0.5)
