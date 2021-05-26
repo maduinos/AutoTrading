@@ -15,6 +15,8 @@ import time
 import os
 import sys
 
+buy_flag = 0
+
 def time_now():
     now = time.localtime()
     current_time = ( str(now.tm_year)+str(now.tm_mon).zfill(2)+str(now.tm_mday).zfill(2)+str(now.tm_hour).zfill(2)+str(now.tm_min).zfill(2)+str(now.tm_sec).zfill(2) )
@@ -98,8 +100,8 @@ def login():
 def buy_limit_stock(key, coin_type, price, quantity):
     return key.buy_limit_order(coin_type, price, quantity)
 
-def buy_market_stock(key, coin_type, quantity):
-    return key.buy_market_order(coin_type, quantity)
+def buy_market_stock(key, coin_type, price):
+    return key.buy_market_order(coin_type, price)
 
 def sell_limit_stock(key, coin_type, price, quantity):
     return key.sell_limit_order(coin_type, price, quantity)
@@ -110,17 +112,33 @@ def sell_market_stock(key, coin_type, quantity):
 def cancle_order(key, uuid):
     return key.cancel_order('uuid')
 
+def tmp_xrp_strategy(key, df):
+    if (list(df['RSI'].iloc[-1:])[0]) < 30 :
+        buy = buy_market_stock(key, 'KRW-DOGE', 20000)
+        print(buy)
+        buy_flag = 1
+    elif (list(df['RSI'].iloc[-1:])[0]) > 70 :
+        sell = sell_market_stock(key, 'KRW-DOGE', 30)
+        print(sell)
+        buy_flag = 0
+
+buy_flag = 0
 def main():
     #date = '20210503070000' # 년월일시분일초
     date = time_now()
-    count = 100
-    interval = "day" # minute1~minute60
+    count = 200
+    interval = "minute1" # minute1~minute60
     std_price = 'close'
 
     #tickers = tickers_load_all('KRW')
-    df = coin_db_load('KRW-BTC', date, count, interval, std_price)
-    print(df.iloc[-1:,:])
-    #print(df)
+
+    key = login()
+    while(1) : 
+        date = time_now()
+        df = coin_db_load('KRW-DOGE', date, count, interval, std_price)
+        tmp_xrp_strategy(key, df)
+        print(df['RSI'].iloc[-1:])
+        time.sleep(10)
 
 if __name__ == "__main__":
     main()
