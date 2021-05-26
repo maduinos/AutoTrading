@@ -3,6 +3,11 @@ from backtesting.lib import crossover
 from backtesting.test import SMA, GOOG
 import FinanceDataReader as fdr
 
+'''
+- 전략 설명
+10일 이동평균선이 20일 이동평균선을 돌파하면 매수!
+20일 이동평균선이 10일 이동평균선을 돌파하면 매도!
+'''
 class SmaCross(Strategy):
     n1 = 10
     n2 = 20
