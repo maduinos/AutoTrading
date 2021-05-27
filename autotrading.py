@@ -25,32 +25,57 @@ def tickers_load_all(std_price):
     tickers = pyupbit.get_tickers(fiat=std_price) # KRW/BTC/USDT
     return tickers
 
-def history_data_load(ticker, interval, cnt) :
-    # 최근 200봉 데이터 획득
-    df = pyupbit.get_ohlcv(ticker, interval=interval)
-    #df = df.reindex(index=df.index[::-1]) # 최근 데이터가 위쪽으로 올라오도록
+def get_mass_candle(name = "BTC", interval = "d", cnt = 10):
+    """ 
+    param name : "KRW-"제외한 코인명 ex) BTC, ETH, XRP, ...
+    param interval : d, m1, m3, m5, m10, m15, m30, m60, m240, w, m
+    param cnt :  cnt * 200봉 - 가져올 캔들의 200봉의 배수
+    """
+    candle_units = {"m1":"minutes1", "m3":"minutes3", "m5":"minutes5", "m10":"minutes10",
+                    "m15":"minutes15", "m30":"minutes30", "m60":"minutes60",
+                    "m240":"minutes240", "d":"days", "w":"weeks", "m":"months"}
+
     t = time.time()
 
+    # 최근 200봉 데이터 획득
+    df = pyupbit.get_ohlcv("KRW-" + name, interval = candle_units[interval])
+    
     # REST API 요청 수 제한
     # 분당 600회, 초당 10회 (종목, 캔들, 체결, 티커, 호가별)
-    # 마지막 데이터 이전데이터 200봉 획득
-    for i in range(cnt):
-        df2 = pyupbit.get_ohlcv(ticker, interval=interval, to=df.index[0])
+
+    # 마지막 데이터 이전데이터 200봉 획득 cnt만큼 반복하여 df에 병합
+    while cnt > 1:
+        df2 = pyupbit.get_ohlcv("KRW-" + name, interval = candle_units[interval], to = df.index[0])
         if df2 is None: # 요청 수 제한 초과시 재시도 예외 처리
-            # print("Request Time Error")
-            time.sleep(0.5)
+            print("Request Time Error")
+            time.sleep(1)
             continue
-        # df2 = df2.reindex(index=df2.index[::-1]) # 최근 데이터가 위쪽으로 올라오도록
         df = pd.concat([df2,df])
-        # time.sleep(0.05)
+        cnt -= 1
+        time.sleep(0.05)
 
     df.reset_index(inplace=True) # index 리셋
-    df.rename(columns={'index':'date'}, inplace=True) # 열이름 date 변경
-    # print(df)
+    df.rename(columns={"index":"date"}, inplace = True) # 열이름 date 변경
+
     print("Get Data Time :", time.time()-t)
+
+    return df
+
+def to_excel(df, filename="test"):
+    """
+    param df : 데이터프레임
+    param filename : 확장자를 제외한 파일명(문자열)
+    """
     t = time.time()
-    df.to_excel("mass_data.xlsx")
+
+    df.set_index("date", inplace=True) # date 를 index로 설정
+    df = df.reindex(index = df.index[::-1]) # 최근 데이터가 위쪽으로 올라오도록
+    df.reset_index(inplace=True) # index 추가
+    df.to_excel(filename + ".xlsx", float_format = "%.4f")
+
     print("Save Time :", time.time()-t)
+
+    return 0
 
 def add_current_price(ticker, df):
     current_price = pyupbit.get_current_price(ticker)
