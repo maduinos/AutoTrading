@@ -15,6 +15,9 @@ import pyupbit
 import talib
 import pandas as pd
 import numpy as np
+import backtesting
+from backtesting import Backtest, Strategy
+from backtesting.lib import crossover
 
 def time_now():
     now = time.localtime()
@@ -136,6 +139,16 @@ def analysis_read(tickers, date, count, interval, price):
     print(analysis_df_list)
         
     return analysis_df_list
+
+def tmp_xrp_strategy(key, df):
+    if (list(df['RSI'].iloc[-1:])[0]) < 30 :
+        buy = buy_market_stock(key, 'KRW-XRP', 20000)
+        print(buy)
+        buy_flag = 1
+    elif (list(df['RSI'].iloc[-1:])[0]) > 70 :
+        sell = sell_market_stock(key, 'KRW-XRP', 30)
+        print(sell)
+        buy_flag = 0
 '''
 
 def search_dataframe(df, ticker):
@@ -166,18 +179,7 @@ def cancle_order(key, uuid):
 def get_balance(key, ticker):
     return key.get_balance(ticker)['balance']
 
-def tmp_xrp_strategy(key, df):
-    if (list(df['RSI'].iloc[-1:])[0]) < 30 :
-        buy = buy_market_stock(key, 'KRW-XRP', 20000)
-        print(buy)
-        buy_flag = 1
-    elif (list(df['RSI'].iloc[-1:])[0]) > 70 :
-        sell = sell_market_stock(key, 'KRW-XRP', 30)
-        print(sell)
-        buy_flag = 0
 
-def my_strategy(key, df):
-    return 0
 
 def main():
     #date = '20210503070000' # 년월일시분일초

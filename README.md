@@ -12,6 +12,8 @@ sudo make install
 pip install wheel
 pip install BeautifulSoup4
 pip install TA-Lib
-pip install backtesting
-pip install finance-datareader
+~~pip install backtesting~~
+~~pip install finance-datareader~~
+pip install backtrader
+pip install matplotlib==3.2.2
 ```
