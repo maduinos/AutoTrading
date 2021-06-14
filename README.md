@@ -17,3 +17,8 @@ pip install TA-Lib
 pip install backtrader
 pip install matplotlib==3.2.2
 ```
+
+```bash
+sudo apt install python3-tk
+```
+
