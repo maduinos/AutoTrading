@@ -18,6 +18,32 @@ import numpy as np
 from datetime import datetime
 import backtrader as bt
 
+'''
+def analysis_read(tickers, date, count, interval, price):
+    analysis_df_list = pd.DataFrame([])
+    progressbar = ''
+    for ticker in tickers:
+        current_price = pyupbit.get_current_price(ticker)
+        coin_data_df = coin_data_load(ticker, date, count, interval, price)
+        analysis_df = analysis_load(coin_data_df, price)
+        analysis_df['ticker'] = ticker
+        analysis_df['CUR_PRICE'] = current_price
+
+        analysis_df_list(analysis_df.iloc[-1:,:])
+        print(analysis_df_list)
+
+        time.sleep(0.05)
+        progressbar += ('#')
+        os.system('clear')
+        print(progressbar,end='\r')
+
+    print('');
+    analysis_df_list.set_index('ticker')
+    print(analysis_df_list)
+        
+    return analysis_df_list
+'''
+
 ################### backtesting #########################
 class SmaCross(bt.Strategy): # bt.Strategy를 상속한 class로 생성해야 함.
     params = dict(
@@ -129,10 +155,14 @@ def analysis_load(df, std_price):
     array_from_df = df[std_price].values
     rsi = talib.RSI(array_from_df)
     macd, macdsig, macdhisto = talib.MACD(array_from_df)
+    bb_upper, bb_middle, bb_lower = talib.BBANDS(array_from_df, 20, 2, 2)
     df['RSI'] = rsi
     df['MACD'] = macd
     df['MACD_SIG'] = macdsig
     df['MACD_HISTO'] = macdhisto
+    df['BBDANDS_UPPER'] = bb_upper
+    df['BBDANDS_MIDDLE'] = bb_middle
+    df['BBDANDS_LOWER'] = bb_lower
     return df
 
 def coin_data_load(ticker, date, count, interval, std_price):
@@ -147,49 +177,15 @@ def coin_db_load(ticker, date, count, interval, std_price):
     df = change_columns(df)
     return df 
 
-'''
-def analysis_read(tickers, date, count, interval, price):
-    analysis_df_list = pd.DataFrame([])
-    progressbar = ''
-    for ticker in tickers:
-        current_price = pyupbit.get_current_price(ticker)
-        coin_data_df = coin_data_load(ticker, date, count, interval, price)
-        analysis_df = analysis_load(coin_data_df, price)
-        analysis_df['ticker'] = ticker
-        analysis_df['CUR_PRICE'] = current_price
-
-        analysis_df_list(analysis_df.iloc[-1:,:])
-        print(analysis_df_list)
-
-        time.sleep(0.05)
-        progressbar += ('#')
-        os.system('clear')
-        print(progressbar,end='\r')
-
-    print('');
-    analysis_df_list.set_index('ticker')
-    print(analysis_df_list)
-        
-    return analysis_df_list
-
-def tmp_xrp_strategy(key, df):
-    if (list(df['RSI'].iloc[-1:])[0]) < 30 :
-        buy = buy_market_stock(key, 'KRW-XRP', 20000)
-        print(buy)
-        buy_flag = 1
-    elif (list(df['RSI'].iloc[-1:])[0]) > 70 :
-        sell = sell_market_stock(key, 'KRW-XRP', 30)
-        print(sell)
-        buy_flag = 0
-'''
-
 def search_dataframe(df, ticker):
     is_cointype = df['TICKER'] == 'KRW-XRP'
     return df[is_cointype]
 
 def login():
-    access_key = "access_key"
-    secret_key = "secret_key"
+    ext_key = open("ext_key", 'r')
+    access_key = ext_key.readline()[:-1]
+    secret_key = ext_key.readline()[:-1]
+    ext_key.close()
     key = pyupbit.Upbit(access_key, secret_key)
     return key
 
@@ -211,6 +207,16 @@ def cancle_order(key, uuid):
 def get_balance(key, ticker):
     return key.get_balance(ticker)['balance']
 
+def xrp_strategy(key, df):
+    if (list(df['RSI'].iloc[-1:])[0]) < 30 :
+        buy = buy_market_stock(key, 'KRW-XRP', 20000)
+        print(buy)
+    elif (list(df['RSI'].iloc[-1:])[0]) > 70 :
+        sell = sell_market_stock(key, 'KRW-XRP', 30)
+        print(sell)
+    else :
+        print("stay")
+
 def main():
     date = time_now() #'20210503070000' # 년월일시분일초
     count = 200
@@ -218,29 +224,13 @@ def main():
     std_price = 'close'
     #tickers = tickers_load_all('KRW')
 
-    '''
-    data = bt.feeds.GenericCSVData(
-        dataname=dataset_filename,
-        dtformat="%Y-%m-%dT%H:%M:%S",
-        timeframe=bt.TimeFrame.Ticks,
-        )
-    '''
-    data = bt.feeds.YahooFinanceData(
-            dataname='005930.KS', 
-            fromdate=datetime(2019, 1, 1), 
-            todate=datetime(2019, 12, 31)
-            )
-    run_backtesting(data)
-
-    '''
     key = login()
     while(1) : 
         date = time_now()
         df = coin_db_load('KRW-XRP', date, count, interval, std_price)
-        tmp_xrp_strategy(key, df)
-        print(df['RSI'].iloc[-1:])
+        #xrp_strategy(key, df)
+        print(df.iloc[-1:])
         time.sleep(10)
-    '''
 
 if __name__ == "__main__":
     main()
