@@ -15,8 +15,7 @@ pip install TA-Lib
 pip install backtrader
 pip install matplotlib==3.2.2
 ```
-~~pip install backtesting~~
-
+~~pip install backtesting~~  
 ~~pip install finance-datareader~~
 
 ```bash
