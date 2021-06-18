@@ -205,17 +205,46 @@ def cancle_order(key, uuid):
     return key.cancel_order('uuid')
 
 def get_balance(key, ticker):
-    return key.get_balance(ticker)['balance']
+    return key.get_balance(ticker)
 
-def xrp_strategy(key, df):
-    if (list(df['RSI'].iloc[-1:])[0]) < 30 :
-        buy = buy_market_stock(key, 'KRW-XRP', 20000)
-        print(buy)
-    elif (list(df['RSI'].iloc[-1:])[0]) > 70 :
-        sell = sell_market_stock(key, 'KRW-XRP', 30)
-        print(sell)
-    else :
-        print("stay")
+def get_balances(key):
+    return key.get_balances()
+
+def check_account_ticker(key, ticker):
+    status = 0
+    balances = get_balances(key)
+    for balance in balances:
+        have = ('KRW-'+balance['currency'])
+        if( have == ticker):
+            #print("Have "+ticker)
+            status |= 1
+        else:
+            #print("None "+ticker)
+            status |= 0
+    return status
+
+def strategy(key, df):
+    ticker = df['TICKER'].iloc[-1:][0]
+    buy_price = list(df['RSI'].iloc[-1:])[0]
+    sell_price = list(df['RSI'].iloc[-1:])[0]
+    #print(buy_price)
+    #print(sell_price)
+
+    have = check_account_ticker(key, ticker)
+    if(have == 1):
+        if(sell_price) > 70:
+            sell = sell_market_stock(key, ticker, 0.03)
+            print(sell)
+            print("Sell "+ticker+ "Success")
+        else:
+            print("Sell condition "+ticker+ " not satisfied")
+    else:
+        if (buy_price) < 30 :
+            buy = buy_market_stock(key, ticker, 10000)
+            print(buy)
+            print("Buy "+ticker+ "Success")
+        else:
+            print("Buy condition "+ticker+ " not satisfied")
 
 def main():
     date = time_now() #'20210503070000' # 년월일시분일초
@@ -227,10 +256,10 @@ def main():
     key = login()
     while(1) : 
         date = time_now()
-        df = coin_db_load('KRW-XRP', date, count, interval, std_price)
-        #xrp_strategy(key, df)
+        df = coin_db_load('KRW-ETH', date, count, interval, std_price)
+        strategy(key, df)
         print(df.iloc[-1:])
-        time.sleep(10)
+        time.sleep(1)
 
 if __name__ == "__main__":
     main()
