@@ -210,12 +210,13 @@ def get_balance(key, ticker):
 def get_balances(key):
     return key.get_balances()
 
-def check_account_ticker(key, ticker):
+def check_buy_sell(key, ticker):
     status = 0
     balances = get_balances(key)
     for balance in balances:
         have = ('KRW-'+balance['currency'])
-        if( have == ticker):
+        small = balance['balance']
+        if( (have==ticker) and (float(small)>0.0035) ): # tmp ETH only
             #print("Have "+ticker)
             status |= 1
         else:
@@ -230,10 +231,10 @@ def strategy(key, df):
     #print(buy_price)
     #print(sell_price)
 
-    have = check_account_ticker(key, ticker)
+    have = check_buy_sell(key, ticker)
     if(have == 1):
         if(sell_price) > 70:
-            sell = sell_market_stock(key, ticker, 0.03)
+            sell = sell_market_stock(key, ticker, 0.0035)
             print(sell)
             print("Sell "+ticker+ "Success")
         else:
