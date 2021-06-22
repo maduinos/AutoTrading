@@ -216,7 +216,7 @@ def check_buy_sell(key, ticker):
     for balance in balances:
         have = ('KRW-'+balance['currency'])
         small = balance['balance']
-        if( (have==ticker) and (float(small)>0.0035) ): # tmp ETH only
+        if( (have==ticker) and (float(small)>0.035) ): # tmp ETH only
             #print("Have "+ticker)
             status |= 1
         else:
@@ -234,18 +234,24 @@ def strategy(key, df):
     have = check_buy_sell(key, ticker)
     if(have == 1):
         if(sell_price) > 70:
-            sell = sell_market_stock(key, ticker, 0.0035)
+            sell = sell_market_stock(key, ticker, 0.035)
             print(sell)
-            print("Sell "+ticker+ "Success")
+            print(time_now(), end='')
+            print(" Sell "+ticker+ " Success")
+            print(df.iloc[-1:])
         else:
-            print("Sell condition "+ticker+ " not satisfied")
+            print(time_now(), end='')
+            print(" Sell condition "+ticker+ " not satisfied")
     else:
         if (buy_price) < 30 :
-            buy = buy_market_stock(key, ticker, 10000)
+            buy = buy_market_stock(key, ticker, 100000)
             print(buy)
-            print("Buy "+ticker+ "Success")
+            print(time_now(), end='')
+            print(" Buy "+ticker+ " Success")
+            print(df.iloc[-1:])
         else:
-            print("Buy condition "+ticker+ " not satisfied")
+            print(time_now(), end='')
+            print(" Buy condition "+ticker+ " not satisfied")
 
 def main():
     date = time_now() #'20210503070000' # 년월일시분일초
@@ -259,7 +265,6 @@ def main():
         date = time_now()
         df = coin_db_load('KRW-ETH', date, count, interval, std_price)
         strategy(key, df)
-        print(df.iloc[-1:])
         time.sleep(1)
 
 if __name__ == "__main__":
