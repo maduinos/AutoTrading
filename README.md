@@ -9,14 +9,9 @@ sudo make install
 ```
 
 ```bash
-pip install wheel
-pip install BeautifulSoup4
-pip install TA-Lib
-pip install backtrader
-pip install matplotlib==3.2.2
+pip install pyupbit wheel BeautifulSoup4 TA-Lib backtrader matplotlib==3.2.2
 ```
-~~pip install backtesting~~  
-~~pip install finance-datareader~~
+~~pip install backtesting finance-datareader~~
 
 ```bash
 sudo apt install python3-tk
