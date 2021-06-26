@@ -210,7 +210,7 @@ def get_balance(key, ticker):
 def get_balances(key):
     return key.get_balances()
 
-def check_buy_sell(key, ticker):
+def check_condition(key, ticker):
     status = 0
     balances = get_balances(key)
     for balance in balances:
@@ -224,47 +224,47 @@ def check_buy_sell(key, ticker):
             status |= 0
     return status
 
-def strategy(key, df):
+def strategy(key, df, status):
     ticker = df['TICKER'].iloc[-1:][0]
     buy_price = list(df['RSI'].iloc[-1:])[0]
     sell_price = list(df['RSI'].iloc[-1:])[0]
-    #print(buy_price)
-    #print(sell_price)
+    flag = status["buy_flag"];
 
-    have = check_buy_sell(key, ticker)
-    if(have == 1):
-        if(sell_price) > 70:
-            sell = sell_market_stock(key, ticker, 0.035)
-            print(sell)
-            print(time_now(), end='')
-            print(" Sell "+ticker+ " Success")
-            print(df.iloc[-1:])
-        else:
-            print(time_now(), end='')
-            print(" Sell condition "+ticker+ " not satisfied")
+    if (buy_price < 30) and (flag == 1):
+        status["buy_flag"] = 0
+        buy = buy_market_stock(key, ticker, 10000)
+        print(buy)
+        print(time_now(), end='')
+        print(" Buy "+ticker+ " Success")
+        print(df.iloc[-1:])
+    elif (buy_price > 40):
+        status["buy_flag"] = 1
     else:
-        if (buy_price) < 30 :
-            buy = buy_market_stock(key, ticker, 100000)
-            print(buy)
-            print(time_now(), end='')
-            print(" Buy "+ticker+ " Success")
-            print(df.iloc[-1:])
-        else:
-            print(time_now(), end='')
-            print(" Buy condition "+ticker+ " not satisfied")
+        pass
+
+    if(sell_price) > 70:
+        balance = get_balance(key, ticker)
+        sell = sell_market_stock(key, ticker, balance)
+        print(sell)
+        print(time_now(), end='')
+        print(" Sell "+ticker+ " Success")
+        print(df.iloc[-1:])
+    else:
+        pass
 
 def main():
     date = time_now() #'20210503070000' # 년월일시분일초
     count = 200
     interval = "minute1" # minute1~minute60
     std_price = 'close'
+    status = {"buy_flag":1}
     #tickers = tickers_load_all('KRW')
 
     key = login()
     while(1) : 
         date = time_now()
         df = coin_db_load('KRW-ETH', date, count, interval, std_price)
-        strategy(key, df)
+        strategy(key, df, status)
         time.sleep(1)
 
 if __name__ == "__main__":
