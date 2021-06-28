@@ -254,7 +254,7 @@ def strategy(key, df, status):
         print(df.iloc[-1:])
     elif (buy_price < 10) and (buy_price >= 5) and (buy_flag == 3):
         status["buy_flag"] = 4
-        buy = buy_market_stock(key, ticker, 40000)
+        buy = buy_market_stock(key, ticker, 80000)
         print(buy)
         print(time_now(), end='')
         print(" Buy "+ticker+ " Success")
