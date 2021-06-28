@@ -231,22 +231,29 @@ def strategy(key, df, status):
     buy_flag = status["buy_flag"]
     sell_flag = status["sell_flag"]
 
-    if (buy_price < 30) and (buy_price >= 20) and (buy_flag == 0):
+    if (buy_price < 30) and (buy_price >= 25) and (buy_flag == 0):
         status["buy_flag"] = 1
         buy = buy_market_stock(key, ticker, 10000)
         print(buy)
         print(time_now(), end='')
         print(" Buy "+ticker+ " Success")
         print(df.iloc[-1:])
-    elif (buy_price < 20) and (buy_price >= 10) and (buy_flag == 1):
+    elif (buy_price < 25) and (buy_price >= 15) and (buy_flag == 1):
         status["buy_flag"] = 2
         buy = buy_market_stock(key, ticker, 20000)
         print(buy)
         print(time_now(), end='')
         print(" Buy "+ticker+ " Success")
         print(df.iloc[-1:])
-    elif (buy_price < 10) and (buy_price >= 0) and (buy_flag == 2):
+    elif (buy_price < 15) and (buy_price >= 10) and (buy_flag == 2):
         status["buy_flag"] = 3
+        buy = buy_market_stock(key, ticker, 40000)
+        print(buy)
+        print(time_now(), end='')
+        print(" Buy "+ticker+ " Success")
+        print(df.iloc[-1:])
+    elif (buy_price < 10) and (buy_price >= 5) and (buy_flag == 3):
+        status["buy_flag"] = 4
         buy = buy_market_stock(key, ticker, 40000)
         print(buy)
         print(time_now(), end='')
@@ -258,26 +265,29 @@ def strategy(key, df, status):
         pass
 
     balance = get_balance(key, ticker)
-    if (sell_price > 70) and (sell_flag == 0):
-        if(balance == 0):
-            print(time_now(), end='')
-            print(" Dont have  "+ticker)
-        else:
-            status["sell_flag"] = 1
-            sell = sell_market_stock(key, ticker, (balance/2))
-            print(sell)
-            print(time_now(), end='')
-            print(" Sell "+ticker+ " Success")
-            print(df.iloc[-1:])
-    elif (sell_price > 70) and (sell_flag == 1):
+    if (sell_price > 70) and (sell_price <= 75) and (sell_flag == 0):
+        status["sell_flag"] = 1
+        sell = sell_market_stock(key, ticker, (balance/4))
+        print(sell)
+        print(time_now(), end='')
+        print(" Sell "+ticker+ " Success")
+        print(df.iloc[-1:])
+    elif (sell_price > 75) and (sell_price <= 80) and (sell_flag == 1):
         status["sell_flag"] = 2
+        sell = sell_market_stock(key, ticker, (balance/2))
+        print(sell)
+        print(time_now(), end='')
+        print(" Sell "+ticker+ " Success")
+        print(df.iloc[-1:])
+    elif (sell_price > 80) and (sell_price <= 90) and (sell_flag == 2):
+        status["sell_flag"] = 3
         sell = sell_market_stock(key, ticker, balance/2)
         print(sell)
         print(time_now(), end='')
         print(" Sell "+ticker+ " Success")
         print(df.iloc[-1:])
-    elif (sell_price > 70) and (sell_flag == 2):
-        status["sell_flag"] = 3
+    elif (sell_price > 90) and (sell_price <= 100) and (sell_flag == 3):
+        status["sell_flag"] = 4
         sell = sell_market_stock(key, ticker, balance)
         print(sell)
         print(time_now(), end='')
@@ -287,7 +297,6 @@ def strategy(key, df, status):
         status["sell_flag"] = 0
     else:
         pass
-
 
 def main():
     date = time_now() #'20210503070000' # 년월일시분일초
