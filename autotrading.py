@@ -267,7 +267,7 @@ def strategy(key, df, status):
         print(time_now(), end='')
         print(" Buy "+ticker+ " Success")
         print(df.iloc[-1:])
-    elif (buy_price > 50):
+    elif (buy_price > 35):
         status["buy_flag"] = 0
     else:
         pass
@@ -309,7 +309,7 @@ def strategy(key, df, status):
         print(time_now(), end='')
         print(" Sell "+ticker+ " Success")
         print(df.iloc[-1:])
-    elif (sell_price < 50):
+    elif (sell_price < 65):
         status["sell_flag"] = 0
     else:
         pass
