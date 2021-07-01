@@ -231,7 +231,6 @@ def strategy(key, df, status):
     buy_flag = status["buy_flag"]
     sell_flag = status["sell_flag"]
     min_price = status["min_price"]
-    print(min_price)
 
     money = 50000
     if (buy_price < 30) and (buy_flag == 0):
@@ -274,7 +273,7 @@ def strategy(key, df, status):
         print(time_now(), end='')
         print(" Buy "+ticker+ " Success")
         print(df.iloc[-1:])
-    elif (buy_price > 35):
+    elif (buy_price > 40):
         status["buy_flag"] = 0
     else:
         pass
