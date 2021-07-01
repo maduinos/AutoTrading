@@ -231,6 +231,7 @@ def strategy(key, df, status):
     buy_flag = status["buy_flag"]
     sell_flag = status["sell_flag"]
     min_price = status["min_price"]
+    print(min_price)
 
     money = 50000
     if (buy_price < 30) and (buy_flag == 0):
@@ -327,7 +328,7 @@ def main():
     count = 200
     interval = "minute1" # minute1~minute60
     std_price = 'close'
-    status = {"buy_flag":0, "sell_flag":0, "min_price":0}
+    status = {"buy_flag":0, "sell_flag":0, "min_price":30}
     #tickers = tickers_load_all('KRW')
 
     key = login()
