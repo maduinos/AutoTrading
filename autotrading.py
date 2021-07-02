@@ -317,7 +317,7 @@ def strategy(key, df, status):
         print(" Sell "+ticker+ " Success")
         print(df.iloc[-1:])
         '''
-    elif (sell_price < 65):
+    elif (sell_price < (min_price+20)):
         status["sell_flag"] = 0
     else:
         pass
