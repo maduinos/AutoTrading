@@ -280,21 +280,22 @@ def strategy(key, df, status):
 
 
     balance = get_balance(key, ticker)
-    if (sell_price > (min_price+30) ) and (sell_flag == 0):
+    #if (sell_price > (min_price+40) ) and (sell_flag == 0):
+    if (sell_price > 70) and (sell_flag == 0):
         status["sell_flag"] = 1
         sell = sell_market_stock(key, ticker, (balance/2))
         print(sell)
         print(time_now(), end='')
         print(" Sell "+ticker+ " Success")
         print(df.iloc[-1:])
-    elif (sell_price > (min_price+35) ) and (sell_flag == 1):
+    elif (sell_price > 75) and (sell_flag == 1):
         status["sell_flag"] = 2
         sell = sell_market_stock(key, ticker, (balance/2))
         print(sell)
         print(time_now(), end='')
         print(" Sell "+ticker+ " Success")
         print(df.iloc[-1:])
-    elif (sell_price > (min_price+40)) and (sell_flag == 2):
+    elif (sell_price > 80) and (sell_flag == 2):
         status["sell_flag"] = 3
         sell = sell_market_stock(key, ticker, (balance))
         print(sell)
@@ -333,7 +334,7 @@ def main():
     key = login()
     while(1) : 
         date = time_now()
-        df = coin_db_load('KRW-BTC', date, count, interval, std_price)
+        df = coin_db_load('KRW-ETH', date, count, interval, std_price)
         strategy(key, df, status)
         time.sleep(1)
 
