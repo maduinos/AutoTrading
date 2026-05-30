@@ -1,7 +1,5 @@
 # AutoTrading Lab
 
-[![Python Checks](https://github.com/maduinos/AutoTrading/actions/workflows/python.yml/badge.svg)](https://github.com/maduinos/AutoTrading/actions/workflows/python.yml)
-
 Maduinos의 개인 암호화폐 거래 연구 스크립트입니다.
 
 이 저장소는 취미/실험 프로젝트이며 Maduinos FPGA 비즈니스 포트폴리오에 포함되지 않습니다. 실험 기록과 코드 정리 참고용으로 공개합니다.
@@ -60,15 +58,8 @@ chmod 600 ext_key
 | `autotrading.py` | 거래 helper, TA-Lib indicator 계산, 실험용 RSI strategy loop |
 | `data_history.py` | 공개 candle history를 CSV 파일로 다운로드 |
 | `get_mass_data.py` | pyupbit를 통해 더 큰 OHLCV dataset 다운로드 |
-| `tests/` | import-safe helper 동작 smoke test |
 
 ## 사용법
-
-테스트 실행:
-
-```bash
-python3 -m unittest discover -s tests -v
-```
 
 공개 candle CSV 다운로드:
 

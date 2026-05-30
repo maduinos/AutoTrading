@@ -152,7 +152,7 @@ def get_mass_candle(name = "BTC", interval = "d", cnt = 10):
 
     return df
 
-def to_excel(df, filename="test"):
+def to_excel(df, filename="output"):
     """
     param df : 데이터프레임
     param filename : 확장자를 제외한 파일명(문자열)
