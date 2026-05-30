@@ -1,0 +1,24 @@
+# Local secrets
+ext_key
+.env
+
+# Generated market data
+data/
+*.csv
+*.xlsx
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Logs and OS/editor noise
+*.log
+.DS_Store
+Thumbs.db
+*.swp
+*.swo

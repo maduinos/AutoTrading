@@ -1,0 +1,24 @@
+name: Python Checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Compile modules
+        run: python -m py_compile autotrading.py data_history.py get_mass_data.py tests/test_autotrading.py tests/test_data_history.py tests/test_get_mass_data.py

@@ -1,0 +1,7 @@
+backtrader
+matplotlib==3.2.2
+openpyxl
+pandas
+pyupbit
+requests
+TA-Lib
