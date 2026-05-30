@@ -91,3 +91,10 @@ python3 autotrading.py
 ## License
 
 MIT License. See `LICENSE`.
+
+## Project Management
+
+- Changes: `CHANGELOG.md`
+- Support scope: `SUPPORT.md`
+- Contribution guide: `CONTRIBUTING.md`
+- Security reporting: `SECURITY.md`
