@@ -59,5 +59,42 @@ class OrderApiTest(unittest.TestCase):
         key.cancel_order.assert_called_once_with("legacy-uuid")
 
 
+class DataFrameSearchTest(unittest.TestCase):
+    def test_search_dataframe_uses_requested_ticker(self):
+        class TickerColumn:
+            def __init__(self):
+                self.compared_to = None
+
+            def __eq__(self, ticker):
+                self.compared_to = ticker
+                return ["mask", ticker]
+
+        class SearchableFrame:
+            def __init__(self):
+                self.ticker_column = TickerColumn()
+                self.applied_mask = None
+
+            def __getitem__(self, key):
+                if key == "TICKER":
+                    return self.ticker_column
+                self.applied_mask = key
+                return key
+
+        df = SearchableFrame()
+
+        result = autotrading.search_dataframe(df, "KRW-ETH")
+
+        self.assertEqual(df.ticker_column.compared_to, "KRW-ETH")
+        self.assertEqual(df.applied_mask, ["mask", "KRW-ETH"])
+        self.assertEqual(result, ["mask", "KRW-ETH"])
+
+
+class CurrentPriceTest(unittest.TestCase):
+    def test_add_current_price_requires_pyupbit_dependency(self):
+        with patch.object(autotrading, "pyupbit", None):
+            with self.assertRaisesRegex(RuntimeError, "pyupbit"):
+                autotrading.add_current_price("KRW-BTC", {})
+
+
 if __name__ == "__main__":
     unittest.main()

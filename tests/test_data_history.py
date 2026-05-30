@@ -1,4 +1,7 @@
 import unittest
+from pathlib import Path
+import tempfile
+from unittest.mock import patch
 
 import data_history
 
@@ -49,6 +52,19 @@ class DataHistoryTest(unittest.TestCase):
                 }
             ],
         )
+
+    def test_collect_history_omits_empty_downloads(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with patch.object(data_history, "fetch_candles", return_value=[]):
+                files = data_history.collect_history(
+                    coins=["BTC"],
+                    time_units=["days"],
+                    minute_units=[],
+                    output_dir=tmp,
+                )
+
+            self.assertEqual(files, [])
+            self.assertFalse((Path(tmp) / "BTC_KRW_days.csv").exists())
 
 
 if __name__ == "__main__":

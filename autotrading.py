@@ -169,6 +169,7 @@ def to_excel(df, filename="test"):
     return 0
 
 def add_current_price(ticker, df):
+    require_dependency(pyupbit, "pyupbit")
     current_price = pyupbit.get_current_price(ticker)
     df['TICKER'] = ticker
     df['CUR_PRICE'] = current_price
@@ -210,7 +211,7 @@ def coin_db_load(ticker, date, count, interval, std_price):
     return df 
 
 def search_dataframe(df, ticker):
-    is_cointype = df['TICKER'] == 'KRW-XRP'
+    is_cointype = df['TICKER'] == ticker
     return df[is_cointype]
 
 def load_api_keys(key_file="ext_key"):
