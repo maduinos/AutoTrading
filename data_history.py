@@ -56,9 +56,9 @@ def write_csv(rows, output_path):
 
 
 def collect_history(coins=None, time_units=None, minute_units=None, output_dir="data"):
-    coins = coins or DEFAULT_COINS
-    time_units = time_units or DEFAULT_TIME_UNITS
-    minute_units = minute_units or DEFAULT_MINUTE_UNITS
+    coins = DEFAULT_COINS if coins is None else coins
+    time_units = DEFAULT_TIME_UNITS if time_units is None else time_units
+    minute_units = DEFAULT_MINUTE_UNITS if minute_units is None else minute_units
     output_dir = Path(output_dir)
 
     written_files = []
@@ -66,14 +66,16 @@ def collect_history(coins=None, time_units=None, minute_units=None, output_dir="
         for unit in time_units:
             rows = fetch_candles(coin, unit)
             output_path = output_dir / f"{coin}_KRW_{unit}.csv"
-            write_csv(rows, output_path)
-            written_files.append(output_path)
+            if rows:
+                write_csv(rows, output_path)
+                written_files.append(output_path)
 
         for unit in minute_units:
             rows = fetch_candles(coin, unit)
             output_path = output_dir / f"{coin}_KRW_{unit}.csv"
-            write_csv(rows, output_path)
-            written_files.append(output_path)
+            if rows:
+                write_csv(rows, output_path)
+                written_files.append(output_path)
 
     return written_files
 
