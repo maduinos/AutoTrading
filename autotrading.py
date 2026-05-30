@@ -10,13 +10,36 @@
 
 import time
 import os
-import sys
-import pyupbit
-import talib
-import pandas as pd
-import numpy as np
-from datetime import datetime
-import backtrader as bt
+from pathlib import Path
+
+try:
+    import pyupbit
+except ModuleNotFoundError:
+    pyupbit = None
+
+try:
+    import talib
+except ModuleNotFoundError:
+    talib = None
+
+try:
+    import pandas as pd
+except ModuleNotFoundError:
+    pd = None
+
+try:
+    import backtrader as bt
+except ModuleNotFoundError:
+    bt = None
+
+
+def require_dependency(module, package_name):
+    if module is None:
+        raise RuntimeError(
+            f"{package_name} is required for this operation. "
+            f"Install project dependencies before running live trading scripts."
+        )
+    return module
 
 '''
 def analysis_read(tickers, date, count, interval, price):
@@ -45,27 +68,31 @@ def analysis_read(tickers, date, count, interval, price):
 '''
 
 ################### backtesting #########################
-class SmaCross(bt.Strategy): # bt.Strategy를 상속한 class로 생성해야 함.
-    params = dict(
-        pfast=5, # period for the fast moving average
-        pslow=30 # period for the slow moving average
-    )
-    
-    def __init__(self):
-        sma1 = bt.ind.SMA(period=self.p.pfast) # fast moving average
-        sma2 = bt.ind.SMA(period=self.p.pslow) # slow moving average
-        self.crossover = bt.ind.CrossOver(sma1, sma2) # crossover signal
+if bt is not None:
+    class SmaCross(bt.Strategy): # bt.Strategy를 상속한 class로 생성해야 함.
+        params = dict(
+            pfast=5, # period for the fast moving average
+            pslow=30 # period for the slow moving average
+        )
 
-    def next(self):
-        if not self.position: # not in the market
-            if self.crossover > 0: # if fast crosses slow to the upside
-                close = self.data.close[0] # 종가 값
-                size = int(self.broker.getcash() / close) # 최대 구매 가능 개수
-                self.buy(size=size) # 매수 size = 구매 개수 설정
-            elif self.crossover < 0: # in the market & cross to the downside
-                self.close() # 매도
+        def __init__(self):
+            sma1 = bt.ind.SMA(period=self.p.pfast) # fast moving average
+            sma2 = bt.ind.SMA(period=self.p.pslow) # slow moving average
+            self.crossover = bt.ind.CrossOver(sma1, sma2) # crossover signal
+
+        def next(self):
+            if not self.position: # not in the market
+                if self.crossover > 0: # if fast crosses slow to the upside
+                    close = self.data.close[0] # 종가 값
+                    size = int(self.broker.getcash() / close) # 최대 구매 가능 개수
+                    self.buy(size=size) # 매수 size = 구매 개수 설정
+                elif self.crossover < 0: # in the market & cross to the downside
+                    self.close() # 매도
+else:
+    SmaCross = None
 
 def run_backtesting(data):
+    require_dependency(bt, "backtrader")
     cerebro = bt.Cerebro() # create a "Cerebro" engine instance
     #data = bt.feeds.YahooFinanceData(dataname='005930.KS', fromdate=datetime(2019, 1, 1), todate=datetime(2019, 12, 31))
     cerebro.adddata(data)
@@ -83,6 +110,7 @@ def time_now():
     return current_time
 
 def tickers_load_all(std_price):
+    require_dependency(pyupbit, "pyupbit")
     tickers = pyupbit.get_tickers(fiat=std_price) # KRW/BTC/USDT
     return tickers
 
@@ -96,6 +124,8 @@ def get_mass_candle(name = "BTC", interval = "d", cnt = 10):
                     "m15":"minutes15", "m30":"minutes30", "m60":"minutes60",
                     "m240":"minutes240", "d":"days", "w":"weeks", "m":"months"}
 
+    require_dependency(pyupbit, "pyupbit")
+    require_dependency(pd, "pandas")
     t = time.time()
 
     # 최근 200봉 데이터 획득
@@ -152,6 +182,7 @@ def change_columns(df):
     return df
 
 def analysis_load(df, std_price):
+    require_dependency(talib, "TA-Lib")
     array_from_df = df[std_price].values
     rsi = talib.RSI(array_from_df)
     macd, macdsig, macdhisto = talib.MACD(array_from_df)
@@ -166,6 +197,7 @@ def analysis_load(df, std_price):
     return df
 
 def coin_data_load(ticker, date, count, interval, std_price):
+    require_dependency(pyupbit, "pyupbit")
     df = pyupbit.get_ohlcv(ticker, to=date, count=count, interval=interval)
     #df.set_index('TICKER')
     return df
@@ -181,11 +213,26 @@ def search_dataframe(df, ticker):
     is_cointype = df['TICKER'] == 'KRW-XRP'
     return df[is_cointype]
 
-def login():
-    ext_key = open("ext_key", 'r')
-    access_key = ext_key.readline()[:-1]
-    secret_key = ext_key.readline()[:-1]
-    ext_key.close()
+def load_api_keys(key_file="ext_key"):
+    access_key = os.environ.get("UPBIT_ACCESS_KEY")
+    secret_key = os.environ.get("UPBIT_SECRET_KEY")
+    if access_key and secret_key:
+        return access_key.strip(), secret_key.strip()
+
+    path = Path(key_file)
+    if path.exists():
+        keys = [line.strip() for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+        if len(keys) >= 2:
+            return keys[0], keys[1]
+
+    raise RuntimeError(
+        "Upbit API keys were not found. Set UPBIT_ACCESS_KEY and "
+        "UPBIT_SECRET_KEY, or create a local ext_key file from ext_key.example."
+    )
+
+def login(key_file="ext_key"):
+    require_dependency(pyupbit, "pyupbit")
+    access_key, secret_key = load_api_keys(key_file)
     key = pyupbit.Upbit(access_key, secret_key)
     return key
 
@@ -201,8 +248,11 @@ def sell_limit_stock(key, ticker, price, quantity):
 def sell_market_stock(key, ticker, quantity):
     return key.sell_market_order(ticker, quantity)
 
+def cancel_order(key, uuid):
+    return key.cancel_order(uuid)
+
 def cancle_order(key, uuid):
-    return key.cancel_order('uuid')
+    return cancel_order(key, uuid)
 
 def get_balance(key, ticker):
     return key.get_balance(ticker)
