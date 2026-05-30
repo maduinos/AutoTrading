@@ -8,7 +8,7 @@ Maduinos의 개인 암호화폐 거래 연구 스크립트입니다.
 
 - 이 저장소의 내용은 금융 조언이 아닙니다.
 - 코드를 직접 검토하고 위험을 이해하기 전에는 실제 API key로 live trading 함수를 실행하지 마세요.
-- API key는 절대 Git에 커밋하지 않습니다. 환경 변수 또는 `ext_key.example`에서 복사한 로컬 `ext_key` 파일을 사용하세요.
+- API key는 절대 Git에 커밋하지 않습니다. 환경 변수로만 설정하세요.
 - 읽기 전용 API 호출과 실제 주문 호출이 섞여 있던 과거 탐색용 스크립트는 공개 tree에서 제거했습니다.
 
 ## 요구 사항
@@ -35,21 +35,10 @@ sudo make install
 
 ## API Key 설정
 
-권장 방식:
-
 ```bash
-export UPBIT_ACCESS_KEY="your-access-key"
-export UPBIT_SECRET_KEY="your-secret-key"
+export UPBIT_ACCESS_KEY="<access-key>"
+export UPBIT_SECRET_KEY="<secret-key>"
 ```
-
-기존 로컬 파일 방식:
-
-```bash
-cp ext_key.example ext_key
-chmod 600 ext_key
-```
-
-이후 로컬에서 `ext_key`를 편집합니다. 실제 `ext_key` 파일은 Git에서 ignore됩니다.
 
 ## 스크립트
 

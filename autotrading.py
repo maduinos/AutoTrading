@@ -228,7 +228,7 @@ def load_api_keys(key_file="ext_key"):
 
     raise RuntimeError(
         "Upbit API keys were not found. Set UPBIT_ACCESS_KEY and "
-        "UPBIT_SECRET_KEY, or create a local ext_key file from ext_key.example."
+        "UPBIT_SECRET_KEY."
     )
 
 def login(key_file="ext_key"):
