@@ -82,5 +82,5 @@ MIT License로 배포합니다. 자세한 내용은 `LICENSE`를 확인하세요
 - 릴리스 절차: `RELEASE.md`
 - 지원 범위: `SUPPORT.md`
 - 기여 가이드: `CONTRIBUTING.md`
-- 보안 신고: `SECURITY.md`
 - 보안 이력 메모: `docs/security-history.md`
+- 문의·소식: <https://maduinos.blogspot.com/>
