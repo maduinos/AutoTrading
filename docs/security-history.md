@@ -1,3 +1,7 @@
+> 만든 사람: maduinos<br>
+> 문서 만든 날짜: 2026-05-30<br>
+> https://maduinos.blogspot.com/
+
 # Security History Notes
 
 This repository previously tracked a local `ext_key` file. The public branch history was rewritten on 2026-05-30 to remove that file from all commits.

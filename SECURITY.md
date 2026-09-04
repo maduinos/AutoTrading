@@ -1,3 +1,7 @@
+> 만든 사람: maduinos<br>
+> 문서 만든 날짜: 2026-05-30<br>
+> https://maduinos.blogspot.com/
+
 # Security Policy
 
 This repository must not contain real API keys, account data, private logs, or generated trading data with sensitive information.

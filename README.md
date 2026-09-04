@@ -1,3 +1,7 @@
+> 만든 사람: maduinos<br>
+> 문서 만든 날짜: 2021-05-21<br>
+> https://maduinos.blogspot.com/
+
 # AutoTrading Lab
 
 Maduinos의 개인 암호화폐 거래 연구 스크립트입니다.

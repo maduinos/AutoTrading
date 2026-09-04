@@ -1,3 +1,7 @@
+> 만든 사람: maduinos<br>
+> 문서 만든 날짜: 2026-05-30<br>
+> https://maduinos.blogspot.com/
+
 # Release Process
 
 This is a personal lab repository. Releases are optional and should be used only when a stable public snapshot is useful.
